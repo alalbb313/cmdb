@@ -73,9 +73,7 @@
 
 
 # 感谢：
-1. 本项目堡垒机，借签的 <a href="https://github.com/jumpserver/coco" target="_blank">jumpserver/coco</a>
-2. webssh、websftp，借签 <a href="https://github.com/jimmy201602/webterminal" target="_blank">jimmy201602/webterminal</a>
-3. HTML模板结构，借签 <a href="https://github.com/hequan2017/cmdb" target="_blank">hequan2017/cmdb</a>
+webssh、websftp项目，借签 <a href="https://github.com/jimmy201602/webterminal" target="_blank">jimmy201602/webterminal</a>
 
 <!-- github不允许超级链接在新窗口中打开？ -->
 <!-- * 本项目堡垒机，借签的 [jumpserver/coco](https://github.com/jumpserver/coco?_blank)

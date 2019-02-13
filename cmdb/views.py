@@ -260,11 +260,11 @@ class UserEdit(LoginRequiredMixin, UpdateView):
         except:
             print 'Error: host：%s, 出现未知异常情况，有主机刚被删除？！' % host_ids
 
-        apps_new = App.objects.filter(id__in=app_ids)
-        try:
-            self.object.app_set.set(apps_new)
-        except:
-            print 'Error: host：%s, 出现未知异常情况，有APP刚被删除？！' % app_ids
+        # apps_new = App.objects.filter(id__in=app_ids)
+        # try:
+        #     self.object.app_set.set(apps_new)
+        # except:
+        #     print 'Error: host：%s, 出现未知异常情况，有APP刚被删除？！' % app_ids
 
         return redirect(self.get_success_url())
         # return super(self.__class__, self).form_valid(form)
