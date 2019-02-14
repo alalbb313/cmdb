@@ -199,10 +199,10 @@ STATICFILES_DIRS = (
 )
 
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_ROOT = '/kf/bak'
+MEDIA_ROOT = '/kf'
 MEDIA_URL = '/media/'
 
-SSH_REPLAY = '/kf/replay'
+SSH_REPLAY = 'sshreplay'  # 存放终端录像，MEDIA_ROOT/SSH_REPLAY
 
 REDIS = ['127.0.0.1:6379', '2019']
 

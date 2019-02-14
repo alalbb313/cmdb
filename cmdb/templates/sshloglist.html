@@ -55,6 +55,7 @@
                             <tr>
                                 <th>主机</th>
                                 <th class="col-xs-2">用户</th>
+                                <th class="col-xs-1">类型</th>
                                 <th class="col-xs-2">开始时间</th>
                                 <th class="col-xs-2">结束结束</th>
                                 <th class="col-lg-3">命令列表</th>
@@ -67,6 +68,7 @@
                             <tr>
                                 <td>{{ o.host }}</td>
                                 <td>{{ o.user }}</td>
+                                <td>{{ o.get_type_display }}</td>
                                 <td>{{ o.start_time }}</td>
                                 <td>{{ o.end_time }}</td>
                                 <td>{{ o.cmds }}</td>
@@ -76,7 +78,7 @@
                                     <a class="btn btn-primary btn-xs" href="/admin/cmdb/ssh_log/{{ o.id }}/change/" target="_blank">详情</a>
                                     {% if o.end_time %}
                                     <button type="button" class="btn btn-success btn-xs" id="{{ o.log }}">播放</button>
-                                    {% else %}
+                                    {% elif o.type == 'webssh' %}
                                     <button type="button" class="btn btn-info btn-xs" id="{{ o.channel }}">监视</button>
                                     {% endif %}
 

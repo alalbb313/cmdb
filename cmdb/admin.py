@@ -158,3 +158,10 @@ class DockerCompose_admin(MyAdmin):
 class SshUserCheck_admin(MyAdmin):
     list_display = ('host', 'password', 'error', 'createtime', )
     search_fields = ('host',)
+
+
+@admin.register(models.SSH_Log)
+class SSH_Log_admin(ReadOnlyAdmin):
+    list_display = ('host', 'user', 'log', 'start_time', 'end_time', )
+    search_fields = ('host', 'user')
+

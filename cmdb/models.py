@@ -906,8 +906,15 @@ def get_logname():
 
 class SSH_Log(models.Model):
     # 终端操作回放录像
+    SSHTYPE = (
+        (1, u"webssh"),
+        (2, u"Xshell"),
+        (3, u"SecureCRT"),
+    )
+
     host = models.ForeignKey(Host, verbose_name=u'主机',)
     user = models.ForeignKey(User, verbose_name='用户')
+    type = models.SmallIntegerField(u"终端类型", choices=SSHTYPE, default=1, null=True, blank=True)
     channel = models.CharField(max_length=100, verbose_name='channel', default='', blank=False, editable=False)
     log = models.CharField(max_length=100, verbose_name='文件名', unique=True,
                            default=get_logname, editable=False, blank=False)

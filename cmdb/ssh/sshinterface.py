@@ -25,10 +25,12 @@ import threading
 import socket
 import paramiko
 import selectors2 as selectors
+import time
 
 from django.core.cache import cache
-from cmdb.models import Host
+from cmdb.models import Host, SSH_Log, User
 from cmdb.conf import CliSSH
+from cmdb.consumers import savelog
 
 import sys
 reload(sys)
@@ -52,6 +54,7 @@ class ServerInterface(paramiko.ServerInterface):
         self.tty_args = ['?', 80, 40]  # 终端参数(终端, 长, 宽)
         self.ssh_args = None  # ssh连接参数
         self.type = None
+        self.sshlog = None  # 终端日志
 
     def conn_ssh(self):
         # proxy_client ==>> ssh_server
@@ -72,6 +75,9 @@ class ServerInterface(paramiko.ServerInterface):
         sel.register(self.chan_cli, selectors.EVENT_READ)
         sel.register(self.chan_ser, selectors.EVENT_READ)
 
+        stdouts = []  # 录像记录
+        begin_time = last_activity_time = time.time()
+
         while self.chan_ser and self.chan_cli and not (self.chan_ser.closed or self.chan_cli.closed):
             events = sel.select(timeout=60)
             # import ipdb; ipdb.set_trace()
@@ -81,8 +87,16 @@ class ServerInterface(paramiko.ServerInterface):
                         x = self.chan_ser.recv(1024)
                         if len(x) == 0:
                             self.chan_cli.send("\r\n服务端已断开连接....\r\n")
-                            return
-                        self.chan_cli.send(x)
+                            break
+                        else:
+                            self.chan_cli.send(x)
+                            # 记录操作录像
+                            now = time.time()
+                            delay = round(now - last_activity_time, 6)
+                            last_activity_time = now
+                            # print[delay, x], 999
+                            stdouts.append([delay, x])
+
                     except socket.timeout:
                         pass
                 if key.fileobj == self.chan_cli:
@@ -90,12 +104,18 @@ class ServerInterface(paramiko.ServerInterface):
                         x = self.chan_cli.recv(1024)
                         if len(x) == 0:
                             print("\r\n客户端断开了连接....\r\n")
-                            return
-                        self.chan_ser.send(x)
+                            break
+                        else:
+                            self.chan_ser.send(x)
                     except socket.timeout:
                         pass
                     except socket.error:
                         break
+
+        # self.sshlog.save()
+        times = round(time.time() - begin_time, 6)  # 录像总时长
+        # import ipdb; ipdb.set_trace()
+        savelog(self.sshlog, times, stdouts, stdins=[])
 
     def close(self):
         # 关闭ssh终端
@@ -129,7 +149,12 @@ class ServerInterface(paramiko.ServerInterface):
             if not self.ssh_args:
                 self.set_ssh_args(hostid)
             # self.conn_ssh(hostid)
-            return paramiko.AUTH_SUCCESSFUL
+            try:
+                user = User.objects.get(username=username)
+                self.sshlog = SSH_Log.objects.create(host_id=hostid, user=user, type=2)
+                return paramiko.AUTH_SUCCESSFUL
+            except:
+                print('验证成功，但由于终端日志生成失败，为安全不通过登陆验证。')
         return paramiko.AUTH_FAILED
 
     def check_auth_gssapi_with_mic(
