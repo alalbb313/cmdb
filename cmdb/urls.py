@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^webssh', WebSSH.as_view(), name="webssh"),
     url(r'^cmdrun', CmdRun.as_view(), name="cmdrun"),
     # url(r'^sshreplay/(?P<pk>\d+)/', SshReplay.as_view(), name='ssh_replay'),
+    url(r'^sshlog/kill', sshlog_kill, name='sshlog_kill'),
     url(r'^sshlog', SshLogList.as_view(), name='sshlog'),
     url(r'^sshmonitor/(?P<channel>.*)', SshMonitor.as_view(), name='sshmonitor'),
 

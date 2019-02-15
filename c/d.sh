@@ -59,15 +59,15 @@ run() {
 
 port=8088 #默认端口
 
-multiple_web=0
-# 使一台机器支持运行多个django网站
-# channels只考虑分布式或一台主机仅支持一个django
-# 为支持同一主机运行多个网站，不同端口的runworker进行区分隔离，以免混用。
-# daphne -t 150 -b 0.0.0.0 -p $port .... #port = sys.argv[6]
-# 需修改官方channels routing.py和generic/websockets.py
-
+multiple_web=1
 if [ "$multiple_web" -ne 0 ];then
     web_channel_route=${port}.
+    # 使一台机器支持运行多个django网站
+    # channels只考虑分布式或一台主机仅支持一个django
+    # 为支持同一主机运行多个网站，不同端口的runworker进行区分隔离，以免混用。
+    # daphne -t 150 -b 0.0.0.0 -p $port .... #port = sys.argv[6]
+    # 需修改官方channels routing.py和generic/websockets.py
+
 fi
 
 

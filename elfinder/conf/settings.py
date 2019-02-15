@@ -1,19 +1,22 @@
+# coding=utf-8
 from os.path import join
 from django.conf import settings
 from elfinder.utils.accesscontrol import fs_standard_access
 from elfinder.volumes.filesystem import ElfinderVolumeLocalFileSystem
+from elfinder.volumes.storage import ElfinderVolumeStorage
 
+"""
 ELFINDER_JS_URLS = {
-    'a_jquery': 'http://apps.bdimg.com/libs/jquery/1.8.2/jquery.min.js',
-    'b_jqueryui': 'http://apps.bdimg.com/libs/jqueryui/1.9.2/jquery-ui.min.js',
-    'c_elfinder': '%selfinder/js/elfinder.full.js' % settings.STATIC_URL,
+    'a_jquery': '%sjs/jquery-3.1.1.min.js' % settings.STATIC_URL,
+    'b_jqueryui': '%splugins/elfinder/js/jquery-ui.min.js' % settings.STATIC_URL,
+    'c_elfinder': '%splugins/elfinder/js/elfinder.min.js' % settings.STATIC_URL,
 }
 # allow to override any key in the project settings file
 ELFINDER_JS_URLS.update(getattr(settings, 'ELFINDER_JS_URLS', {}))
 
 ELFINDER_CSS_URLS = {
-    'a_jqueryui': 'http://apps.bdimg.com/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css',
-    'b_elfinder': '%selfinder/css/elfinder.min.css' % settings.STATIC_URL
+    'a_jqueryui': '%splugins/elfinder/css/jquery-ui.css' % settings.STATIC_URL,
+    'b_elfinder': '%splugins/elfinder/css/elfinder.min.css' % settings.STATIC_URL,
 }
 # allow to override any key in the project settings file
 ELFINDER_CSS_URLS.update(getattr(settings, 'ELFINDER_CSS_URLS', {}))
@@ -21,13 +24,11 @@ ELFINDER_CSS_URLS.update(getattr(settings, 'ELFINDER_CSS_URLS', {}))
 ELFINDER_WIDGET_JS_URL = '%sjs/jquery.elfinder-widget.full.js' % settings.STATIC_URL
 ELFINDER_WIDGET_CSS_URL = '%scss/jquery.elfinder-widget.full.css' % settings.STATIC_URL
 
-ELFINDER_LANGUAGES_ROOT_URL = getattr(
-    settings, 'ELFINDER_LANGUAGES_ROOT_URL', '%splugins/elfinder/js/i18n/' % settings.STATIC_URL)
+ELFINDER_LANGUAGES_ROOT_URL = getattr(settings, 'ELFINDER_LANGUAGES_ROOT_URL', '%splugins/elfinder/js/i18n/' % settings.STATIC_URL)
 
 # The available language codes. A corresponding ELFINDER_LANGUAGES_ROOT_URL/elfinder.{ext}.js url must be available
-ELFINDER_LANGUAGES = getattr(settings, 'ELFINDER_LANGUAGES', [
-                             'ar', 'bg', 'ca', 'cs', 'de', 'el', 'es', 'fa', 'fr', 'hu', 'it', 'jp', 'ko', 'nl', 'no', 'pl', 'pt_BR', 'ru', 'tr', 'zh_CN'])
-
+ELFINDER_LANGUAGES = getattr(settings, 'ELFINDER_LANGUAGES', ['ar', 'bg', 'ca', 'cs', 'de', 'el', 'es', 'fa', 'fr', 'hu', 'it', 'jp', 'ko', 'nl', 'no', 'pl', 'pt_BR', 'ru', 'tr', 'zh_CN'])
+"""
 ELFINDER_CONNECTOR_OPTION_SETS = {
     # the default keywords demonstrates all possible configuration options
     # it allowes all file types, except from hidden files
@@ -76,7 +77,7 @@ ELFINDER_CONNECTOR_OPTION_SETS = {
                 'uploadOrder': ['deny', 'allow'],
                 # maximum upload file size. NOTE - this is size for every uploaded files
                 # The maximum upload file size. Set as number (bytes) or string ending with the size unit (e.g. "10M", "500K", "1G")
-                'uploadMaxSize': '128m',
+                'uploadMaxSize': '128g',
                 # if True - every folder will be check for children folders, otherwise all folders will be marked as having subfolders
                 # 'checkSubfolders' : True,
                 # allow to copy from this volume to other ones?
@@ -241,11 +242,10 @@ ELFINDER_CONNECTOR_OPTION_SETS = {
                 'storageClass': 'elfinder.sftpstoragedriver.sftpstorage.SFTPStorage',
                 'keepAlive': True,
                 'cache': 300,
-                # 'uploadMaxSize' : '1024m',
+                # 'uploadMaxSize': '1024g', # 不注释，前端POST上传一次就停了
             }
         ]
     },
 }
 
-ELFINDER_CONNECTOR_OPTION_SETS.update(
-    getattr(settings, 'ELFINDER_CONNECTOR_OPTION_SETS', {}))
+ELFINDER_CONNECTOR_OPTION_SETS.update(getattr(settings, 'ELFINDER_CONNECTOR_OPTION_SETS', {}))

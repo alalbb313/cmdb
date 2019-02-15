@@ -27,8 +27,7 @@ import paramiko
 import selectors2 as selectors
 import time
 
-from django.core.cache import cache
-from cmdb.models import Host, SSH_Log, User
+from cmdb.models import Host, SSH_Log, User, cache
 from cmdb.conf import CliSSH
 from cmdb.consumers import savelog
 
@@ -38,6 +37,39 @@ sys.setdefaultencoding('UTF-8')
 
 # ssh_client ===>>          proxy_ssh             ==>> ssh_server
 # ssh_client ===>> (proxy_server -> proxy_client) ==>> ssh_server
+
+
+class SshProxys:
+    # 终端录像和结束终端，进程之间通信使用redis缓存，使外部进程可强制关闭软件终端
+    def __init__(self):
+        self.sshs = {}
+        # self.ssh_timeout = 3600 * 24  # 终端过期时间(秒)
+
+    def newlog(self, proxy_ssh, hostid, username):
+        # 有新终端连接，初始化终端日志
+        user = User.objects.get(username=username)
+        sshlog = SSH_Log.objects.create(host_id=hostid, user=user, type=2)
+
+        cache.set('proxy_ssh_%d' % sshlog.id, 1)
+        self.sshs[sshlog.id] = proxy_ssh
+        return sshlog
+
+    def chk_close_ssh(self):
+        while 1:
+            time.sleep(10)
+            for sshlog_id, proxy_ssh in self.sshs.items():
+                if not cache.get('proxy_ssh_%d' % sshlog_id):
+                    # import ipdb; ipdb.set_trace()
+                    proxy_ssh.chan_cli.send(u'\033[1;3;31m系统管理员已强制中止了您的终端连接\033[0m\r\n')
+                    self.sshs.pop(sshlog_id).chan_ser.close()
+
+    def run_close_ssh(self):
+        t = threading.Thread(target=self.chk_close_ssh)
+        t.daemon = True
+        t.start()
+
+proxys = SshProxys()
+proxys.run_close_ssh()
 
 
 def transport_keepalive(transport):
@@ -150,8 +182,7 @@ class ServerInterface(paramiko.ServerInterface):
                 self.set_ssh_args(hostid)
             # self.conn_ssh(hostid)
             try:
-                user = User.objects.get(username=username)
-                self.sshlog = SSH_Log.objects.create(host_id=hostid, user=user, type=2)
+                self.sshlog = proxys.newlog(self, hostid, username)  # 录像回放/强制结束终端
                 return paramiko.AUTH_SUCCESSFUL
             except:
                 print('验证成功，但由于终端日志生成失败，为安全不通过登陆验证。')

@@ -186,6 +186,12 @@ def savelog(sshlog, times, stdouts, stdins):
             try:
                 sshlog.save()
             except Exception as e:
+                """
+                极端情况，终端连接闲置长久不退，比如10小时，超出mysql连接闲置中断超时时间，
+                django已无任何数据库连接，正常情况下重新访问网页程序时django会自动重连，
+                但是特殊情况下，尤其是后端程序自动处理，因无任何网址访问重新触发，导致出错。
+                django Bug，需connection.close()后，django的程序才会自动重连mysql
+                """
                 print e
                 time.sleep(5)
                 connection.close()

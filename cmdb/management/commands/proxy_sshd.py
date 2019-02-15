@@ -11,6 +11,7 @@ from cmdb.ssh.sshd import SSHServer
 from cmdb.conf import CliSSH
 
 import sys
+# /usr/lib64/python2.7/site-packages/sitecustomize.py
 reload(sys)
 sys.setdefaultencoding('UTF-8')
 
@@ -19,8 +20,8 @@ port = CliSSH['port']
 
 
 class Command(BaseCommand):
-    # 生成SSH服务端，用于代理SSH
-    help = u'生成SSH代理服务器，类似堡垒机功能，使用网站支持Xshell终端'
+    # 生成SSH服务端，用于透明代理SSH
+    help = u'生成SSH透明代理服务器，类似堡垒机功能，使网站支持Xshell终端'
 
     # def add_arguments(self, parser):
     #     parser.add_argument('port', nargs='?', default='2222', type=int,

@@ -26,6 +26,7 @@
         docker pull py2010/cmdb
         # 启动容器，部署完成
         docker run -it -p 8088:8088 -p 2222:2222 py2010/cmdb
+        (如果为便于git更新，项目代码放在宿主机上的/xxx/xxx，加 -v /xxx/xxx:/kf/dj 参数挂载目录)
         二、如果不使用容器，手工部署也很简单，requirements.txt中写得比较详细，
         准备centos6或7（估计unbuntu也行，没实际布署测试过），
         python2.7安装requirements.txt中的模块，安装redis。
@@ -79,14 +80,14 @@ webssh、websftp项目，借签 <a href="https://github.com/jimmy201602/webtermi
 为防引起不必要的误解和恶意嘲讽，现已删除，fork项目也取消。
 
 (
-“jumpserver/coco”，有三个文件有从coco来的，cmdb/ssh/目录下sshd.py sftpinterface.py sshinterface.py
+“jumpserver/coco”，有三个文件从coco改来的，cmdb/ssh/目录下sshd.py sftpinterface.py sshinterface.py
 “hequan2017/cmdb”，主要说这个，用的是html模板，前年开发CMDB时当时网上有二三个基于Inspinia的模板，
 那时看的何全的cmdb的后台用的是site1.0，我因想快速开发，不开发前端页面，
 有些添加管理页面只有后台admin，所以当时是想统一admin后台和Inspinia模板，配色/风格保持一致。
 说实话，当前模板历史上真正开发量最大的有二人，一个是首个将Inspinia模板应用到CMDB中的人，感谢。
 另一个就是我，并且我觉得Inspinia模板是现成的，但是要将admin后台模板风格/配色和前端Inspinia模板一致，我的工作量是最大的！
 
-真他妈的见了鬼了，第三方群某些人总是阴洋怪气，只要讲到我的项目，就是集成、整合、CV工程师……
+真他妈的见了鬼了，第三方群某些人总是阴阳怪气，只要讲到我的项目，就是集成、整合、CV工程师……
 这些人叫得欢，其实压根都没实际用过，老是大嘴，讲个几次也就算了，很正常，有人的地方就有江湖。
 逢我必说，真他妈的烦，人家作者本人都不坑声。之前我github开发项目，只要有借签、参考，都会fork。
 你借签、参考别人的项目时，会不会在readme中说明？会不会fork尊重一下？

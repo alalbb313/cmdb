@@ -80,6 +80,9 @@
                                     <button type="button" class="btn btn-success btn-xs" id="{{ o.log }}">播放</button>
                                     {% elif o.type == 'webssh' %}
                                     <button type="button" class="btn btn-info btn-xs" id="{{ o.channel }}">监视</button>
+                                    {% elif user.is_superuser %}
+                                    <button type="button" class="btn btn-danger btn-xs" id="{{ o.id }}">结束</button>
+
                                     {% endif %}
 
                                 </td>
@@ -108,7 +111,26 @@
 
 <script type="application/javascript">
 
-    $( ".btn-success, .btn-info" ).click(function (){
+    function kill_ssh(logid) {
+        // 强制中止xshell终端
+
+        $.ajax({
+            url: "{% url 'cmdb:sshlog_kill' %}/",
+            type: 'POST',
+            data: {'logid': logid, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            error: function(){
+                alert("强制中止xshell终端失败！");
+            },
+            success: function (data) {
+                alert("已成功发送了中止指令。。");
+            }
+
+        })
+    }
+
+
+
+    $( ".btn-success, .btn-info, .btn-danger" ).click(function (){
         // console.log($(this));
         // console.log(this.parentElement.id);
         var host = this.parentElement.parentElement.children[0].textContent;
@@ -126,12 +148,19 @@
             // console.log(logurl);
             var message = "<asciinema-player src='"+logurl+"'></asciinema-player>"
             var size=BootstrapDialog.SIZE_NORMAL;
-        } else {
+        } else if (this.className=="btn btn-info btn-xs") {
             // 监视
             var monurl = "{% url 'cmdb:sshmonitor' '' %}" + this.id;
             // console.log(monurl);
             var message = $('<div style="overflow: auto;background-color: rgba(0, 0, 0, 0);"></div>').load(monurl);
             var size=BootstrapDialog.SIZE_WIDE;
+        } else {
+            // 强制结束
+            if(! window.confirm('确定要强制结束用户当前连接中的终端？')){
+                return false;
+            }
+            kill_ssh(this.id);
+            return false;
         }
 
         var cssclass='primary-default';

@@ -30,7 +30,7 @@ sys.setdefaultencoding("utf-8")
 
 
 class Elfinders:
-
+    # 用于关闭闲置的SFTP连接
     def __init__(self):
         # self.opts = opts
         self.elfinder_sftps = {}

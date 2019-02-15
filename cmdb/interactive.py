@@ -40,7 +40,7 @@ class TTY():
     ssh = paramiko.SSHClient()
 
     def __init__(self, ws_channel):
-        self.redis = ws_channel.channel_layer._connection_list[0]
+        self.redis = ws_channel.channel_layer._connection_list[0]  # 多进程之间协调通信
         self.ws_channel = ws_channel  # 前端WebSocket
         self.stdin = ''  # 收集用户端按键输入
         self.stdins = ['', ]  # 收集用户端按键输入
@@ -100,11 +100,10 @@ class TTY():
         """
         chan: 后端paramiko所连接的主机SSH终端，当前函数中只收不发
         ws_channel：前端WebSocket，当前函数中只发不收
-        后端chan ==> 前端ws_channel
+        redis队列 ==> 后端chan ==> 前端ws_channel
         """
         stdouts = []  # 录像记录
-        begin_time = time.time()
-        last_write_time = {'last_activity_time': begin_time}
+        begin_time = last_activity_time = time.time()
 
         try:
             chan.settimeout(0.0)
@@ -142,8 +141,8 @@ class TTY():
                         ws_channel.send({'text': json.dumps(['disconnect', smart_unicode('\r\n*** EOF\r\n')])}, immediately=True)
                         break
                     now = time.time()
-                    delay = round(now - last_write_time['last_activity_time'], 6)
-                    last_write_time['last_activity_time'] = now
+                    delay = round(now - last_activity_time, 6)
+                    last_activity_time = now
                     # print[delay, x], 999
                     stdouts.append([delay, x])
 
@@ -198,7 +197,7 @@ class TTY():
           由于输出无延时，输入输出信息同时出现，合成一大片，解析处理复杂，所以忽略，需结合stdin
         2.处理前端输入stdin，由于table键补全、上下方向键历史命令，都无法获知，只有stdout中才有，
           在第三方软件界面，比如vi top等，stdin混杂了很多无需统计的按键输入，处理复杂。
-        将输入输入的信息合成到self.stdins
+        将输入的信息合成到self.stdins
         """
 
         # import ipdb;ipdb.set_trace()
