@@ -61,7 +61,7 @@ class SshProxys:
                 if not cache.get('proxy_ssh_%d' % sshlog_id):
                     # import ipdb; ipdb.set_trace()
                     proxy_ssh.chan_cli.send(u'\033[1;3;31m系统管理员已强制中止了您的终端连接\033[0m\r\n')
-                    self.sshs.pop(sshlog_id).chan_ser.close()
+                    self.sshs.pop(sshlog_id).chan_ser.transport.close()
 
     def run_close_ssh(self):
         t = threading.Thread(target=self.chk_close_ssh)

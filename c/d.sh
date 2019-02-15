@@ -59,7 +59,7 @@ run() {
 
 port=8088 #默认端口
 
-multiple_web=1
+multiple_web=0
 if [ "$multiple_web" -ne 0 ];then
     web_channel_route=${port}.
     # 使一台机器支持运行多个django网站

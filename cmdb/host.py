@@ -11,6 +11,7 @@ from django.http.request import QueryDict
 # from django.conf import settings
 
 from django.http.response import HttpResponseRedirect
+from django.utils import timezone
 
 from cmdb.models import *
 from forms import HostForm2, HostForm
@@ -501,3 +502,14 @@ class SshMonitor(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = 'sshmonitor.html'
     permission_required = 'cmdb.replay_ssh_log'
     raise_exception = True
+
+
+def sshlog_kill(request):
+    # 强制结束Xshell终端，SSH透明代理通过redis proxy_ssh_logid键 来判断终端是否中止
+    if not request.user.is_superuser:
+        print '只有管理员才允许强制结束终端'
+        raise PermissionDenied
+    if request.method == 'POST':
+        logid = request.POST.get('logid')
+        cache.delete('proxy_ssh_%s' % logid)
+    return HttpResponse('')
