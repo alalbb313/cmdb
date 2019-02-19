@@ -75,32 +75,3 @@
 
 # 感谢：
 webssh、websftp项目，借签 <a href="https://github.com/jimmy201602/webterminal" target="_blank">jimmy201602/webterminal</a>
-# 说明
-原感谢中，写有三个借签项目，包含“jumpserver/coco”和“hequan2017/cmdb”，感谢二位作者提供的开源项目
-为防引起不必要的误解和恶意嘲讽，现已删除，fork项目也取消。
-
-(
-“jumpserver/coco”，有三个文件从coco改来的，cmdb/ssh/目录下sshd.py sftpinterface.py sshinterface.py
-“hequan2017/cmdb”，主要说这个，用的是html模板，前年开发CMDB时当时网上有二三个基于Inspinia的模板，
-那时看的何全的cmdb的后台用的是site1.0，我因想快速开发，不开发前端页面，
-有些添加管理页面只有后台admin，所以当时是想统一admin后台和Inspinia模板，配色/风格保持一致。
-说实话，当前模板历史上真正开发量最大的有二人，一个是首个将Inspinia模板应用到CMDB中的人，感谢。
-另一个就是我，并且我觉得Inspinia模板是现成的，但是要将admin后台模板风格/配色和前端Inspinia模板一致，我的工作量是最大的！
-
-真他妈的见了鬼了，第三方群某些人总是阴阳怪气，只要讲到我的项目，就是集成、整合、CV工程师……
-这些人叫得欢，其实压根都没实际用过，老是大嘴，讲个几次也就算了，很正常，有人的地方就有江湖。
-逢我必说，真他妈的烦，人家作者本人都不坑声。之前我github开发项目，只要有借签、参考，都会fork。
-你借签、参考别人的项目时，会不会在readme中说明？会不会fork尊重一下？
-大家都是python系统开发的，你要是不懂开发，看说明也跟着起哄挖苦也就算了，真变态！
-自己开发个普通系统，平平常常，网上一堆类似的系统，经常在群中发链接宣传，真是服了。
-我这项目都没在群里发链接宣传，只顺便发过一次自我解嘲一下，
-项目是从我在公司开发的CMDB中提取的，半年/一年从公司CMDB中提取改动一次，压根就没想怎么样，
-码云认可我的项目，首页推荐，你也可以开发个去首页推荐啊，妒忌个毛？
-)
-
-
-
-<!-- github不允许超级链接在新窗口中打开？ -->
-<!-- * 本项目堡垒机，借签的 [jumpserver/coco](https://github.com/jumpserver/coco?_blank)
-* webssh、websftp，借签 [jimmy201602/webterminal](https://github.com/jimmy201602/webterminal?_blank)
-* HTML模板结构，借签 [hequan2017/cmdb](https://github.com/hequan2017/cmdb?_blank) -->
