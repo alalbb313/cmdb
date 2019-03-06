@@ -43,14 +43,14 @@ class SshProxys:
     # 终端录像和结束终端，进程之间通信使用redis缓存，使外部进程可强制关闭软件终端
     def __init__(self):
         self.sshs = {}
-        # self.ssh_timeout = 3600 * 24  # 终端过期时间(秒)
+        self.timeout = 3600 * 24  # 终端默认过期时间(秒)
 
     def newlog(self, proxy_ssh, hostid, username):
         # 有新终端连接，初始化终端日志
         user = User.objects.get(username=username)
         sshlog = SSH_Log.objects.create(host_id=hostid, user=user, type=2)
 
-        cache.set('proxy_ssh_%d' % sshlog.id, 1)
+        cache.set('proxy_ssh_%d' % sshlog.id, 1, timeout=self.timeout)
         self.sshs[sshlog.id] = proxy_ssh
         return sshlog
 
@@ -60,8 +60,9 @@ class SshProxys:
             for sshlog_id, proxy_ssh in self.sshs.items():
                 if not cache.get('proxy_ssh_%d' % sshlog_id):
                     # import ipdb; ipdb.set_trace()
-                    proxy_ssh.chan_cli.send(u'\033[1;3;31m系统管理员已强制中止了您的终端连接\033[0m\r\n')
-                    self.sshs.pop(sshlog_id).chan_ser.transport.close()
+                    if not proxy_ssh.closed:
+                        proxy_ssh.chan_cli.send(u'\033[1;3;31m系统管理员已强制中止了您的终端连接\033[0m\r\n')
+                    self.sshs.pop(sshlog_id).close()
 
     def run_close_ssh(self):
         t = threading.Thread(target=self.chk_close_ssh)
@@ -87,6 +88,7 @@ class ServerInterface(paramiko.ServerInterface):
         self.ssh_args = None  # ssh连接参数
         self.type = None
         self.sshlog = None  # 终端日志
+        self.closed = False
 
     def conn_ssh(self):
         # proxy_client ==>> ssh_server
@@ -143,7 +145,7 @@ class ServerInterface(paramiko.ServerInterface):
                         pass
                     except socket.error:
                         break
-
+        # self.close()
         # self.sshlog.save()
         times = round(time.time() - begin_time, 6)  # 录像总时长
         # import ipdb; ipdb.set_trace()
@@ -157,7 +159,9 @@ class ServerInterface(paramiko.ServerInterface):
         except:
             pass
         # import ipdb; ipdb.set_trace()
-        print('SSH ({0[2]}@{0[0]}) end..................'.format(self.ssh_args))
+        if not self.closed:
+            print('SSH ({0[2]}@{0[0]}) end..................'.format(self.ssh_args))
+            self.closed = True
 
     def set_ssh_args(self, hostid):
         # 准备proxy_client ==>> ssh_server连接参数，用于后续SSH、SFTP

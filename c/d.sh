@@ -106,6 +106,13 @@ elif [ "$arg1" == "s" ];then
 elif [ -z "$arg1" ];then
     arg1='runserver'
     arg2='0.0.0.0:'$port
+    $p/$f proxy_sshd &
+
+    trap 'onCtrlC' SIGHUP SIGINT SIGQUIT SIGKILL
+    function onCtrlC () {
+        echo -e '\n退出ssh服务端...'
+        pkill -f proxy_sshd
+    }
 #elif [ -z "$arg2" ];then
 #    arg2='0.0.0.0:'${arg1}
 #    arg1='runserver'
