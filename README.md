@@ -77,5 +77,5 @@
 webssh、websftp项目，借签 <a href="https://github.com/jimmy201602/webterminal" target="_blank">jimmy201602/webterminal</a>
 
 # License
-<a href="http://www.gnu.org/licenses/lgpl-2.1.html" target="_blank">LGPL 2.1</a> 
+<a href="http://www.gnu.org/licenses/lgpl-2.1.html" target="_blank">LGPL2.1</a> 
 <a href="https://github.com/996icu/996.ICU/blob/master/LICENSE" target="_blank">996</a>
