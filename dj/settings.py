@@ -66,6 +66,7 @@ SESSION_COOKIE_AGE = 60 * 60 * 14  # cookie有效期*秒
 # False：会话cookie可以在用户浏览器中保持有效期。True：关闭浏览器，则Cookie失效
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 # SESSION_COOKIE_DOMAIN = "*" #作用域
+SESSION_COOKIE_NAME = "dj"  # 同域不同端口时session隔离
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
