@@ -80,6 +80,7 @@ class SSHServer:
     def dispatch(proxy_ssh):
         supported = {'pty', 'x11', 'forward-agent'}
         chan_type = proxy_ssh.type
+        # print chan_type, 999999999999
         # import ipdb; ipdb.set_trace()
         if chan_type in supported:
             # SSH

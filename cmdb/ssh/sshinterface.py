@@ -61,7 +61,10 @@ class SshProxys:
                 if not cache.get('proxy_ssh_%d' % sshlog_id):
                     # import ipdb; ipdb.set_trace()
                     if not proxy_ssh.closed:
-                        proxy_ssh.chan_cli.send(u'\033[1;3;31m系统管理员已强制中止了您的终端连接\033[0m\r\n')
+                        try:
+                            proxy_ssh.chan_cli.send(u'\033[1;3;31m系统管理员已强制中止了您的终端连接\033[0m\r\n')
+                        except:
+                            pass
                     proxy_ssh.close()  # 先关闭再从字典中移出
                     self.sshs.pop(sshlog_id)
 
@@ -88,7 +91,8 @@ class ServerInterface(paramiko.ServerInterface):
         self.tty_args = ['?', 80, 40]  # 终端参数(终端, 长, 宽)
         self.ssh_args = None  # ssh连接参数
         self.type = None
-        self.sshlog = None  # 终端日志
+        self.http_user = None  # 终端日志 -- http用户
+        self.hostid = None  # 终端日志 -- hostid
         self.closed = False
 
     def conn_ssh(self):
@@ -110,6 +114,7 @@ class ServerInterface(paramiko.ServerInterface):
         sel.register(self.chan_cli, selectors.EVENT_READ)
         sel.register(self.chan_ser, selectors.EVENT_READ)
 
+        sshlog = proxys.newlog(self, self.hostid, self.http_user)  # 终端日志
         stdouts = []  # 录像记录
         begin_time = last_activity_time = time.time()
 
@@ -122,6 +127,7 @@ class ServerInterface(paramiko.ServerInterface):
                         x = self.chan_ser.recv(1024)
                         if len(x) == 0:
                             self.chan_cli.send("\r\n服务端已断开连接....\r\n")
+                            time.sleep(1)
                             break
                         else:
                             self.chan_cli.send(x)
@@ -139,6 +145,7 @@ class ServerInterface(paramiko.ServerInterface):
                         x = self.chan_cli.recv(1024)
                         if len(x) == 0:
                             print("\r\n客户端断开了连接....\r\n")
+                            time.sleep(1)
                             break
                         else:
                             self.chan_ser.send(x)
@@ -147,15 +154,15 @@ class ServerInterface(paramiko.ServerInterface):
                     except socket.error:
                         break
         # self.close()
-        # self.sshlog.save()
+        # sshlog.save()
         times = round(time.time() - begin_time, 6)  # 录像总时长
         # import ipdb; ipdb.set_trace()
-        savelog(self.sshlog, times, stdouts, stdins=[])
+        savelog(sshlog, times, stdouts, stdins=[])
 
     def close(self):
         # 关闭ssh终端
-        self.chan_ser.transport.close()
         try:
+            self.chan_ser.transport.close()
             self.chan_cli.transport.close()
         except:
             pass
@@ -177,20 +184,19 @@ class ServerInterface(paramiko.ServerInterface):
             return paramiko.OPEN_SUCCEEDED
         return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
 
-    def check_auth_password(self, username, password):
+    def check_auth_password(self, http_user, password):
         # 验证密码
-        key = 'clissh_%s_%s' % (username, password)
+        key = 'clissh_%s_%s' % (http_user, password)
+        print(http_user, password)
         hostid = cache.get(key)
         if hostid:
             # ssh_client ===>> proxy_server 验证通过
             if not self.ssh_args:
                 self.set_ssh_args(hostid)
+            self.http_user = http_user
+            self.hostid = hostid
             # self.conn_ssh(hostid)
-            try:
-                self.sshlog = proxys.newlog(self, hostid, username)  # 录像回放/强制结束终端
-                return paramiko.AUTH_SUCCESSFUL
-            except:
-                print('验证成功，但由于终端日志生成失败，为安全不通过登陆验证。')
+            return paramiko.AUTH_SUCCESSFUL
         return paramiko.AUTH_FAILED
 
     def check_auth_gssapi_with_mic(
@@ -235,7 +241,7 @@ class ServerInterface(paramiko.ServerInterface):
         self, channel, term, width, height, pixelwidth, pixelheight, modes
     ):
         self.tty_args = [term, width, height]
-        # print (self.tty_args, 7777777777777)
+        print (self.tty_args, 7777777777777)
         self.type = 'pty'
         return True
 
