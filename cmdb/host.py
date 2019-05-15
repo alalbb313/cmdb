@@ -213,6 +213,12 @@ class CliSSH(LoginRequiredMixin, PermissionRequiredMixin, View):
         if not host.chk_user_prem(user, type):
             print '非法操作？！用户<%s>没有主机操作权限:' % user.username, host
             raise PermissionDenied
+        if type == 'sftp':
+            # Xftp.exe" /nsurl sftp://网站用户:临时密码@堡垒机:端口/?TabName=SSH用户/SSH主机
+            link = '{scheme}://{user}:{passwd}@{cmdb}:{port}/?TabName={username}/{host}'
+        else:
+            # Xshell.exe" /nsurl ssh://网站用户:临时密码@堡垒机:端口 -newtab SSH用户/SSH主机
+            link = '{scheme}://{user}:{passwd}@{cmdb}:{port}\\" \\"-newtab\\" \\"{username}/{host}'
         user, passwd = user.username, CliSSH.pwd()
         key = 'clissh_%s_%s' % (user, passwd)
         cache.set(key, hostid, timeout=conf.CliSSH['password_timeout'])  # 写入缓存
@@ -221,7 +227,7 @@ class CliSSH(LoginRequiredMixin, PermissionRequiredMixin, View):
         port = conf.CliSSH['port']
         scheme = conf.CliSSH['scheme'][type]
         ssh_username = host.get_ssh_user()[0]
-        return HttpResponse('{scheme}://{user}:{passwd}@{cmdb}:{port}\\" \\"-newtab\\" \\"{username}/{host}'.format(
+        return HttpResponse(link.format(
                 scheme=scheme,  # 自定义的网页调用外部软件(xshell)协议
                 cmdb=cmdb,  # xshell连接主机(cmdb堡垒机代理)
                 port=port,

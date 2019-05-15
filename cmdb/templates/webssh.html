@@ -579,15 +579,14 @@ Windows Registry Editor Version 5.00
                             connect_clissh($node.id, $node.text);
                         }
                     },
-                    // "xftp": {
-                    //     "separator_before": false,
-                    //     "separator_after": false,
-                    //     "label": "Xftp文件",
-                    //     "action": function (obj) {
-                    //         connect_clissh($node.id, $node.text, "sftp");
-                    //     }
-                    //     // Xftp命令行启动参数未知，暂不支持. 目前只能从Xshell中启动
-                    // },
+                    "xftp": {
+                        "separator_before": false,
+                        "separator_after": false,
+                        "label": "Xftp文件",
+                        "action": function (obj) {
+                            connect_clissh($node.id, $node.text, "sftp");
+                        }
+                    },
                     "webssh": {
                         "separator_before": false,
                         "separator_after": false,
