@@ -550,15 +550,16 @@ class DockerHost(models.Model):
 
     @property
     def client(self):
-        tls = 1 if self.tls else ''  # docker.utils.utils.kwargs_from_env
+        # tls = 1 if self.tls else ''  # docker.utils.utils.kwargs_from_env
+        cert_path = DOCKER_CERT_PATH if self.tls else None
         try:
             cli = docker.from_env(
                 timeout=30,
                 assert_hostname=False,
                 environment={
                     'DOCKER_HOST': 'tcp://%s:%d' % (self.ip, self.port),
-                    'DOCKER_CERT_PATH': DOCKER_CERT_PATH,
-                    'DOCKER_TLS_VERIFY': tls
+                    'DOCKER_CERT_PATH': cert_path,
+                    # 'DOCKER_TLS_VERIFY': tls  # ?????????
                 }
             )
         except docker.errors.TLSParameterError as e:
@@ -567,7 +568,7 @@ class DockerHost(models.Model):
             # ~/.docker/cert.pem
             # ~/.docker/key.pem
             print e
-            error = 'SSL证书不存在？证书目录: %s，TSL验证: %s' % (DOCKER_CERT_PATH, tls)
+            error = 'SSL证书不存在？证书目录: %s，TSL验证: %s' % (DOCKER_CERT_PATH, self.tls)
             return error
 
         cli.dockerhost = self
