@@ -552,14 +552,21 @@ class DockerHost(models.Model):
     def client(self):
         # tls = 1 if self.tls else ''  # docker.utils.utils.kwargs_from_env
         cert_path = DOCKER_CERT_PATH if self.tls else None
+        if docker.tls.ssl.OPENSSL_VERSION_INFO > (1, 0, 1, 0, 0):
+            ssl_version = docker.tls.ssl.PROTOCOL_TLSv1_2
+        else:
+            ssl_version = docker.tls.ssl.PROTOCOL_TLSv1
         try:
             cli = docker.from_env(
                 timeout=30,
                 assert_hostname=False,
+                version='1.30',  # 不同的docker服务端要求版本不同
+                ssl_version=ssl_version,
                 environment={
                     'DOCKER_HOST': 'tcp://%s:%d' % (self.ip, self.port),
                     'DOCKER_CERT_PATH': cert_path,
                     # 'DOCKER_TLS_VERIFY': tls  # ?????????
+                    # 'COMPOSE_TLS_VERSION': 'TLSv1_2',
                 }
             )
         except docker.errors.TLSParameterError as e:
