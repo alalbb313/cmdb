@@ -13,11 +13,11 @@ run() {
     #用于生产环境启动停止django网站进程
     arg1=$1
     # echo $arg1
-    ifs=$IFS; IFS="\n"; 
     proc="$(ps -ef | grep -Ei '(c/d runworker|daphne|runserver 0.0.0.0:'$port'|c/d cert|proxy_sshd|python -u manage.py)' | grep -v 'grep')"
     # echo $proc
 
     if [ "$arg1" == "stop" ];then
+        ifs=$IFS; IFS="\n"; 
         if [ -z "$2" ];then
             echo "Stopping....."
             echo -e $proc | grep -Ei '('$port'|[[:space:]]cert|[[:space:]]proxy_sshd)' | awk '{print $2}' | xargs kill -9 2>/dev/null
@@ -26,6 +26,7 @@ run() {
             netstat -tnlp|grep :$2|awk '{print $7}' |awk -F '/' '{print $1}' | xargs kill -9 2>/dev/null
             #${s%/*}
         fi
+        IFS=$ifs
     elif [ "$arg1" == "start" ];then
         pid=`echo -e $proc | grep $port | awk '{print $2}'`
         if [ -z "$pid" ];then
@@ -50,7 +51,6 @@ run() {
         fi
 
     fi
-    IFS=$ifs
 }
 
 

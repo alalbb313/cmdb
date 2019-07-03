@@ -44,9 +44,11 @@
             </ul>
         </div>
         <div class="tab-content span4">
+
             <div class="tab-pane active" id="help">
+            {% if windows %}
                 <pre>
-                使用xshell配置说明:
+                Windows客户端使用xshell配置说明:
                 1.修改最后一行为你自身的xshell.exe路径，比如C:\Xshell+Xftp\Xshell.exe;
                 2.保存并导入xx.reg文件到注册表。
                 3.建议使用xshell6，Xftp选项卡名称自动和Xshell保持一致。
@@ -63,9 +65,18 @@ Windows Registry Editor Version 5.00
 [HKEY_CLASSES_ROOT\ssh\shell\open\command]
 @="\"C:\\Xshell+Xftp\\Xshell.exe\" \"%1\""
 --------------------------------------------------------------
-
                 </pre>
                 下载*.reg示例（<a href="/static/xterm/cmdb_ssh.reg" target="_blank">cmdb_ssh.reg</a>）
+            {% else %}
+                <pre>
+                Linux客户端使用SecureCRT配置说明:
+                1.下载下面的cmdb_secure.zip;
+                2.解压，打开ssh和sftp的.desktop看一下有没需修改的地方;
+                3.将解压得到的二个.desktop复制到/usr/share/applications/目录中;
+                4.执行update-desktop-database命令刷新desktop库，就可以网页调用SecureCRT和FX了
+                </pre>
+                下载*.desktop示例（<a href="/static/xterm/cmdb_secure.zip" target="_blank">cmdb_secure.zip</a>）
+            {% endif %}
             </div>
         </div>
         <div style="margin-top: 30px;">&nbsp;</div>

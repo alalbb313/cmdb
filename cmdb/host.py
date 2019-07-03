@@ -187,6 +187,7 @@ class WebSSH(LoginRequiredMixin, PermissionRequiredMixin, View):
 
         cmdb_webssh_active = 'active'
         user = request.user
+        windows = 'Windows' in request.META['HTTP_USER_AGENT']
         return render_to_response('webssh.html', locals())
 
 # # 修改默认的合法schemes列表，用于主机终端，跳转调用外部程序，比如xshell
@@ -213,12 +214,14 @@ class CliSSH(LoginRequiredMixin, PermissionRequiredMixin, View):
         if not host.chk_user_prem(user, type):
             print '非法操作？！用户<%s>没有主机操作权限:' % user.username, host
             raise PermissionDenied
-        if type == 'sftp':
-            # Xftp.exe" /nsurl sftp://网站用户:临时密码@堡垒机:端口/?TabName=SSH用户/SSH主机
-            link = '{scheme}://{user}:{passwd}@{cmdb}:{port}/?TabName={username}/{host}'
-        else:
-            # Xshell.exe" /nsurl ssh://网站用户:临时密码@堡垒机:端口 -newtab SSH用户/SSH主机
-            link = '{scheme}://{user}:{passwd}@{cmdb}:{port}\\" \\"-newtab\\" \\"{username}/{host}'
+        link = '{scheme}://{user}:{passwd}@{cmdb}:{port}'
+        if 'Windows' in request.META['HTTP_USER_AGENT']:
+            if type == 'sftp':
+                # Xftp.exe" /nsurl sftp://网站用户:临时密码@堡垒机:端口/?TabName=SSH用户/SSH主机
+                link = '{scheme}://{user}:{passwd}@{cmdb}:{port}/?TabName={username}/{host}'
+            else:
+                # Xshell.exe" ssh://网站用户:临时密码@堡垒机:端口 -newtab SSH用户/SSH主机
+                link = '{scheme}://{user}:{passwd}@{cmdb}:{port}\\" \\"-newtab\\" \\"{username}/{host}'
         user, passwd = user.username, CliSSH.pwd()
         key = 'clissh_%s_%s' % (user, passwd)
         cache.set(key, hostid, timeout=conf.CliSSH['password_timeout'])  # 写入缓存
