@@ -11,6 +11,7 @@
         2. webssh终端，该有功能基本都有，websocker基于django的channels模块，和http在同一监听端口，减少模块依赖安装
         3. websftp文件操作，基于elfinder，上传下载，在线图片预览、文本编辑，文本语法高亮着色（基于ace编辑器）
         4. 软件终端（SSH透明堡垒机），支持从网页跳转到Xshell，比webssh/sftp更方便，需文件操作时可以从Xshell启动Xftp进行
+        如果客戶端是Linux系統，跳转到SecureCRT和FX。
         5. docker管理，支持跨多宿主机管理容器，支持创建二层容器网络（二层桥接和macvlan，
         相当于使容器网卡和所属宿主机网卡接在同一交换机上，而不跨路由/NAT），
         容器创建好后无需映射端口到宿主机而可供其它主机/跨宿主机容器访问，详情帮助见 根目录\c\help\docker\docker二层网络.txt
